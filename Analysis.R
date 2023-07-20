@@ -19,7 +19,8 @@ Trailer_Data_HOUR <- readRDS("TrailerData/Merged_Data_hourly.rds")
 
 
 #Flaring Data (Ends June 15th 2023)
-Flaring_Data <- readRDS("FlaringData/VNF_data_final_2012-2023.rds") %>% filter(date >= "2023-04-15" & date <= "2023-06-13")
+
+Flaring_Data <- readRDS("FlaringData/VNF_Flaring_2012_2023.rds") %>% filter(date >= "2023-04-15" & date <= "2023-06-13")
 Flaring_Data$longitude <- Flaring_Data$long
 Flaring_Data$latitude <- Flaring_Data$lat
 Flaring_Data <- st_as_sf(Flaring_Data, coords = c("longitude", "latitude"), crs = 4326)
