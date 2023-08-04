@@ -10,17 +10,13 @@ library(plotly)
 Loving_Trailer_Coordinates <- data.frame(longitude = -104.109386,latitude = 32.297345)
 Loving_Trailer_Coordinates <- st_as_sf(Loving_Trailer_Coordinates, coords = c("longitude", "latitude"), crs = 4326)
 
-#Trailer Data (Ends June 13th 2023)
+#Trailer Data (Ends July 27th 2023)
 Trailer_Data <- readRDS("TrailerData/Merged_Data.rds")
 Trailer_Data <- Trailer_Data %>% filter(time != "2023-06-06") #filter this out
 
 Trailer_Data_HOUR <- readRDS("TrailerData/Merged_Data_hourly.rds")
 
-
-
-#Flaring Data (Ends June 15th 2023)
-
-Flaring_Data <- readRDS("FlaringData/VNF_Flaring_2012_2023.rds") %>% filter(date >= "2023-04-15" & date <= "2023-06-13")
+Flaring_Data <- readRDS("UpdatedFlaring/VNF_2023.rds") %>% filter(date >= "2023-04-15" & date <= "2023-07-27")
 Flaring_Data$longitude <- Flaring_Data$long
 Flaring_Data$latitude <- Flaring_Data$lat
 Flaring_Data <- st_as_sf(Flaring_Data, coords = c("longitude", "latitude"), crs = 4326)
@@ -72,9 +68,6 @@ List_of_flaring_min_distance <- list(Trailer_Data,Flaring_Data_10km_shortest_dis
 Trailer_Data_with_closest_flaring_and_number <- Reduce(function(x, y) merge(x, y, by="time", all.x=TRUE), List_of_flaring_min_distance)
 
 #-----------------------------------Plots-----------------------------------------------------#
-
-
-
 
 # Create the plotly line chart (OZONE AND NUMBER OF FLARING)
 plot_20_ozone <- plot_ly(data = Trailer_Data_with_closest_flaring_and_number, x = ~time) %>%
@@ -131,7 +124,7 @@ plot_nox20 <- plot_ly(data = Trailer_Data_with_closest_flaring_and_number, x = ~
   add_bars(y = ~number_of_20, name = "Number of Flaring", marker = list(color = "blue"), yaxis = "y1")  %>%
   add_lines(y = ~nox, name = "Nox Levels", line = list(color = "red"), yaxis = "y2") %>%
   layout(
-    title = "Flaring Events and Ozone Levels_20KM",
+    title = "Flaring Events and Nox Levels_20KM",
     xaxis = list(title = "Day"),
     yaxis = list(title = "Number of Flaring", side = "left"),
     yaxis2 = list(title = "Ozone Levels", side = "right", overlaying = "y"),
@@ -142,7 +135,7 @@ plot_nox30 <- plot_ly(data = Trailer_Data_with_closest_flaring_and_number, x = ~
   add_bars(y = ~number_of_30, name = "Number of Flaring", marker = list(color = "blue"), yaxis = "y1")  %>%
   add_lines(y = ~nox, name = "Nox Levels", line = list(color = "red"), yaxis = "y2") %>%
   layout(
-    title = "Flaring Events and Ozone Levels_30KM",
+    title = "Flaring Events and Nox Levels_30KM",
     xaxis = list(title = "Day"),
     yaxis = list(title = "Number of Flaring", side = "left"),
     yaxis2 = list(title = "Ozone Levels", side = "right", overlaying = "y"),
@@ -153,7 +146,7 @@ plot_nox50 <- plot_ly(data = Trailer_Data_with_closest_flaring_and_number, x = ~
   add_bars(y = ~number_of_50, name = "Number of Flaring", marker = list(color = "blue"), yaxis = "y1")  %>%
   add_lines(y = ~nox, name = "Nox Levels", line = list(color = "red"), yaxis = "y2") %>%
   layout(
-    title = "Flaring Events and Ozone Levels_50KM",
+    title = "Flaring Events and Nox Levels_50KM",
     xaxis = list(title = "Day"),
     yaxis = list(title = "Number of Flaring", side = "left"),
     yaxis2 = list(title = "Ozone Levels", side = "right", overlaying = "y"),
@@ -163,7 +156,7 @@ plot_nox100 <- plot_ly(data = Trailer_Data_with_closest_flaring_and_number, x = 
   add_bars(y = ~number_of_100, name = "Number of Flaring", marker = list(color = "blue"), yaxis = "y1")  %>%
   add_lines(y = ~nox, name = "Nox Levels", line = list(color = "red"), yaxis = "y2") %>%
   layout(
-    title = "Flaring Events and Ozone Levels_100KM",
+    title = "Flaring Events and Nox Levels_100KM",
     xaxis = list(title = "Day"),
     yaxis = list(title = "Number of Flaring", side = "left"),
     yaxis2 = list(title = "Ozone Levels", side = "right", overlaying = "y"),
@@ -207,6 +200,12 @@ solr_vs_hour <- ggplot(Trailer_Data_HOUR, aes(x = hour, y = solr))+   geom_bar(s
 ozone_vs_hour <- ggplot(Trailer_Data_HOUR, aes(x = hour, y = o3))+   geom_bar(stat="identity") + ggtitle("Ozone vs hour")
 ggarrange(nox_vs_hour, temp_vs_hour, solr_vs_hour, ozone_vs_hour)
 
+methane_vs_hour <- ggplot(Trailer_Data_HOUR, aes(x = hour, y = ch4)) + geom_bar(stat="identity") + ggtitle("methane vs hour")
+ethane_vs_hour <- ggplot(Trailer_Data_HOUR, aes(x = hour, y = ethane)) + geom_bar(stat="identity") + ggtitle("ethane vs hour")
+propane_vs_hour <- ggplot(Trailer_Data_HOUR, aes(x = hour, y = propane)) + geom_bar(stat="identity") + ggtitle("propane vs hour")
+acetylene_vs_hour <- ggplot(Trailer_Data_HOUR, aes(x = hour, y = acetylene)) + geom_bar(stat="identity") + ggtitle("acetylene vs hour")
+ggarrange(methane_vs_hour, ethane_vs_hour, propane_vs_hour, acetylene_vs_hour)
+
 #needed for below
 Trailer_Data_HOUR_PLOT <- Trailer_Data_HOUR
 Trailer_Data_HOUR_PLOT$mode_direction_8 <- factor(Trailer_Data_HOUR$mode_direction_8, levels = c("N", "NE", "E", "SE", "S", "SW", "W", "NW"))
@@ -228,6 +227,55 @@ Wind_Direction_16 <- ggplot(Trailer_Data_HOUR_PLOT, aes(x = hour, y = mode_direc
   labs(title = "Tile plot of Hour vs Direction (16)", x = "Hour", y = "Direction")
 ggarrange(Wind_Direction_8, Wind_Direction_16, ncol = 1)
 #--------------------------------------------------------------------------------------------------#
+
+
+
+plot_methane20 <- plot_ly(data = Trailer_Data_with_closest_flaring_and_number, x = ~time) %>%
+  add_bars(y = ~number_of_20, name = "Number of Flaring", marker = list(color = "blue"), yaxis = "y1")  %>%
+  add_lines(y = ~ch4, name = "methane Levels", line = list(color = "red"), yaxis = "y2") %>%
+  layout(
+    title = "Flaring Events and methane Levels_20KM",
+    xaxis = list(title = "Day"),
+    yaxis = list(title = "Number of Flaring", side = "left"),
+    yaxis2 = list(title = "Ozone Levels", side = "right", overlaying = "y"),
+    hovermode = "x"
+  )
+
+plot_methane30 <- plot_ly(data = Trailer_Data_with_closest_flaring_and_number, x = ~time) %>%
+  add_bars(y = ~number_of_30, name = "Number of Flaring", marker = list(color = "blue"), yaxis = "y1")  %>%
+  add_lines(y = ~ch4, name = "methane Levels", line = list(color = "red"), yaxis = "y2") %>%
+  layout(
+    title = "Flaring Events and methane Levels_30KM",
+    xaxis = list(title = "Day"),
+    yaxis = list(title = "Number of Flaring", side = "left"),
+    yaxis2 = list(title = "Ozone Levels", side = "right", overlaying = "y"),
+    hovermode = "x"
+  )
+
+plot_methane50 <- plot_ly(data = Trailer_Data_with_closest_flaring_and_number, x = ~time) %>%
+  add_bars(y = ~number_of_50, name = "Number of Flaring", marker = list(color = "blue"), yaxis = "y1")  %>%
+  add_lines(y = ~ch4, name = "methane Levels", line = list(color = "red"), yaxis = "y2") %>%
+  layout(
+    title = "Flaring Events and methane Levels_50KM",
+    xaxis = list(title = "Day"),
+    yaxis = list(title = "Number of Flaring", side = "left"),
+    yaxis2 = list(title = "Ozone Levels", side = "right", overlaying = "y"),
+    hovermode = "x"
+  )
+
+plot_methane100 <- plot_ly(data = Trailer_Data_with_closest_flaring_and_number, x = ~time) %>%
+  add_bars(y = ~number_of_100, name = "Number of Flaring", marker = list(color = "blue"), yaxis = "y1")  %>%
+  add_lines(y = ~ch4, name = "Methane Levels", line = list(color = "red"), yaxis = "y2") %>%
+  layout(
+    title = "Flaring Events and methane Levels_100KM",
+    xaxis = list(title = "Day"),
+    yaxis = list(title = "Number of Flaring", side = "left"),
+    yaxis2 = list(title = "Ozone Levels", side = "right", overlaying = "y"),
+    hovermode = "x"
+  )
+
+
+
 
 
 #-----------------------------------Regression-----------------------------------------------------#
@@ -259,8 +307,6 @@ summary(model_ozone_with_flares_20)
 summary(model_ozone_with_flares_30)
 summary(model_ozone_with_flares_50)
 summary(model_ozone_with_flares_100)
-
-
 
 #--------------------------------------------------------------------------------------------------#
 
