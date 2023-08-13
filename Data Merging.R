@@ -358,7 +358,7 @@ Merged_hourly_data <- merge(merge(merge(merge(Merged_hourly_data, Methane_hourly
 
 #-- FOR DAILY HOURLY AVERAGES
 Merged_daily_hourly_Data <- merge(merge(merge(Nox_daily_hour, Ozone_daily_hour, by = "time", all = TRUE), 
-                                        RadioActivity_daily_hour, by = "time", all = TRUE), Meteor_hourly_daily_average, by = "time", all = TRUE)
+                                        RadioActivity_daily_hour, by = "time", all = TRUE), Meteor_hourly_daily_average, by = "time", all = TRUE) %>% select(-wdr)
 
 #split into to so its easier to read
 Merged_daily_hourly_Data <- merge(merge(merge(merge(Merged_daily_hourly_Data, Methane_daily_hour, by = "time", all = TRUE), Carbon_Monoxide_daily_hour, by = "time", all = TRUE), 
