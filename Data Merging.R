@@ -36,6 +36,15 @@ Select_column_nox_hourly <- colnames(Nox_hourly)[1:length(Nox_hourly)]
 Nox_hourly[Select_column_nox_hourly] <- lapply(Nox_hourly[Select_column_nox_hourly], as.numeric) #making it numeric so we can apply mean since default is character
 Nox_hourly <- Nox_hourly %>% select(-1) %>% group_by(hour) %>% summarise(across(everything(), mean, na.rm = TRUE))
 
+#Daily average by Hour for NOX
+Nox_daily_hour <- Nox 
+Nox_daily_hour$day_hour <- format(Nox_daily_hour$time, "%Y-%m-%d-%H") 
+Select_column_nox_daily_hourly<- colnames(Nox_daily_hour)[3:length(Nox_daily_hour)-1]
+Nox_daily_hour[Select_column_nox_daily_hourly] <- lapply(Nox_daily_hour[Select_column_nox_daily_hourly], as.numeric) #makes middle numeric
+Nox_daily_hour$time <- Nox_daily_hour$day_hour #making it so that the first column is the new last column
+Nox_daily_hour <- Nox_daily_hour %>% select(-ncol(Nox_daily_hour)) %>% group_by(time) %>% summarise(across(everything(), mean, na.rm = TRUE))
+
+
 #---- Reading and applying changes to Radioactivity Data
 RadioActivity<- read.csv("TrailerData/LNM_rd_2023_q2_v1.5.csv", header = FALSE)
 RadioActivity_q3 <- read.csv("TrailerData/LNM_rd_2023_q3_v1.5.csv", header = FALSE)
@@ -56,13 +65,23 @@ Select_column_non_time_RadioActivity <- colnames(RadioActivity_converted[-1]) #s
 RadioActivity_converted[Select_column_non_time_RadioActivity] <- lapply(RadioActivity_converted[Select_column_non_time_RadioActivity], as.numeric)
 RadioActivity_daily_average <- RadioActivity_converted %>% group_by(time) %>% summarize(across(everything(), mean, na.rm = TRUE))
 
-
 #the hourly for radioactivity
 RadioActivity_hourly <- RadioActivity
 RadioActivity_hourly$hour <- format(RadioActivity_hourly$time, "%H")
 Select_column_RadioActivity_hourly <- colnames(RadioActivity_hourly)[1:length(RadioActivity_hourly)]
 RadioActivity_hourly[Select_column_RadioActivity_hourly] <- lapply(RadioActivity_hourly[Select_column_RadioActivity_hourly], as.numeric)
 RadioActivity_hourly <- RadioActivity_hourly %>% select(-1) %>% group_by(hour) %>% summarise(across(everything(), mean, na.rm = TRUE))
+
+
+#Daily average by hour for RadioActivity
+RadioActivity_daily_hour <- RadioActivity
+RadioActivity_daily_hour$day_hour <- format(RadioActivity_daily_hour$time, "%Y-%m-%d-%H") 
+Select_column_RadioActivity_daily_hourly<- colnames(RadioActivity_daily_hour)[3:length(RadioActivity_daily_hour)-1]
+RadioActivity_daily_hour[Select_column_RadioActivity_daily_hourly] <- lapply(RadioActivity_daily_hour[Select_column_RadioActivity_daily_hourly], as.numeric) #makes middle numeric
+RadioActivity_daily_hour$time <- RadioActivity_daily_hour$day_hour #making it so that the first column is the new last column
+RadioActivity_daily_hour <- RadioActivity_daily_hour %>% select(-ncol(RadioActivity_daily_hour)) %>% group_by(time) %>% summarise(across(everything(), mean, na.rm = TRUE))
+
+
 
 #---- Reading and applying changes to OzoneData
 Ozone <- read.csv("TrailerData/LNM_o3_2023_q2_v1.5.csv", header = FALSE)
@@ -82,11 +101,21 @@ Select_column_non_time_Ozone <- colnames(Ozone_converted)[-1] #selecting all col
 Ozone_converted[Select_column_non_time_Ozone] <- lapply(Ozone_converted[Select_column_non_time_Ozone], as.numeric)
 Ozone_daily_average <- Ozone_converted %>% group_by(time) %>% summarize(across(everything(), mean, na.rm = TRUE)) #daily average
 
+#the hourly for Ozone
 Ozone_hourly <- Ozone
 Ozone_hourly$hour <- format(Ozone$time, "%H")
 Select_column_Ozone_hourly <- colnames(Ozone_hourly)[1:length(Ozone_hourly)]
 Ozone_hourly[Select_column_Ozone_hourly] <- lapply(Ozone_hourly[Select_column_Ozone_hourly], as.numeric)
 Ozone_hourly <- Ozone_hourly %>% select(-1) %>% group_by(hour) %>% summarise(across(everything(), mean, na.rm = TRUE))
+
+#Daily average by hour for Ozone
+Ozone_daily_hour <- Ozone 
+Ozone_daily_hour$day_hour <- format(Ozone_daily_hour$time, "%Y-%m-%d-%H") 
+Select_column_Ozone_daily_hourly<- colnames(Ozone_daily_hour)[3:length(Ozone_daily_hour)-1]
+Ozone_daily_hour[Select_column_Ozone_daily_hourly] <- lapply(Ozone_daily_hour[Select_column_Ozone_daily_hourly], as.numeric) #makes middle numeric
+Ozone_daily_hour$time <- Ozone_daily_hour$day_hour #making it so that the first column is the new last column
+Ozone_daily_hour <- Ozone_daily_hour %>% select(-ncol(Ozone_daily_hour)) %>% group_by(time) %>% summarise(across(everything(), mean, na.rm = TRUE))
+
 
 #---- Reading and formatting changes to Meteor Data
 Meteor <- read.csv("TrailerData/LNM_met_2023_q2_v1.5.csv", header = FALSE)
@@ -149,12 +178,21 @@ Meteor_hourly_wind$hour <- as.numeric(Meteor_hourly_wind$hour)
 Meteor_hourly_wind <- Meteor_hourly_wind %>% select(hour, wind_direction_8, wind_direction_16)
 Meteor_hourly_wind <- Meteor_hourly_wind %>% group_by(hour) %>% summarise(mode_direction_8 = mode_func(wind_direction_8), mode_direction_16 = mode_func(wind_direction_16))
 
-#merging the two datasets
-Meteor_daily_average <- merge(Meteor_daily_mode_wdr, Meteor_daily_average)
-Meteor_hourly_average <- merge(Meteor_hourly, Meteor_hourly_wind)
+#Meteor daily hourly average
+Meteor_daily_hourly_average <- Meteor
+Meteor_daily_hourly_average$day_hour <- format(Meteor_daily_hourly_average $time, "%Y-%m-%d-%H") 
+Select_column_Meteor_daily_hourly <- colnames(Meteor_daily_hourly_average)[3:length(Meteor_daily_hourly_average)-1]
+Meteor_daily_hourly_average[Select_column_Meteor_daily_hourly] <- lapply(Meteor_daily_hourly_average[Select_column_Meteor_daily_hourly], as.numeric) #makes middle numeric
+Meteor_daily_hourly_average$time <- Meteor_daily_hourly_average$day_hour
+Meteor_daily_hourly_average <- Meteor_daily_hourly_average %>% select(-ncol(Meteor_daily_hourly_average)) %>% group_by(time) %>% summarise(across(everything(), mean, na.rm = TRUE))
+Meteor_daily_hourly_mode_wdr_merged <- merge(Meteor_hourly_mode_wdr_8, Meteor_hourly_mode_wdr_16, by = "day_hour", all = TRUE) %>% rename(time=day_hour)#meteor portion using previous part 
+
+#merging the two data sets
+Meteor_daily_average <- merge(Meteor_daily_mode_wdr, Meteor_daily_average, by = "time")
+Meteor_hourly_average <- merge(Meteor_hourly, Meteor_hourly_wind, by = "hour")
+Meteor_hourly_daily_average <- merge(Meteor_daily_hourly_average, Meteor_daily_hourly_mode_wdr_merged, by = "time") 
 
 ######---- Importing new CSV FILES VOC, CH4, CO, H2S and doing same steps as above. 
-
 
 #-----------METHANE
 Methane <- read.csv("TrailerData/LNM_ch4_2023_q2_v1.5.csv", header = FALSE)
@@ -166,8 +204,8 @@ names(Methane_q3) <- Methane_q3[2,]
 Methane_q3 <- Methane_q3[-2:-1,] 
 
 Methane <- rbind(Methane, Methane_q3) #merging the two csv file dataframes into one
-
 Methane$time <-  as.POSIXct(as.numeric(Methane$time), origin = "1970-01-01", tz = "UTC")    #converting UNIX to UTC(time)
+
 Methane_converted <- Methane
 Methane_converted $time <- as.Date(Methane_converted $time) 
 Select_column_non_time_Methane <- colnames(Methane)[-1] 
@@ -180,6 +218,14 @@ Methane_hourly$hour <- format(Methane_hourly$time, "%H") #format new column to o
 Select_column_Methane_hourly <- colnames(Methane_hourly)[1:length(Methane_hourly)]
 Methane_hourly[Select_column_Methane_hourly] <- lapply(Methane_hourly[Select_column_Methane_hourly], as.numeric) #making it numeric so we can apply mean since default is character
 Methane_hourly <- Methane_hourly %>% select(-1) %>% group_by(hour) %>% summarise(across(everything(), mean, na.rm = TRUE))
+
+#daily average by hour for Methane
+Methane_daily_hour <- Methane
+Methane_daily_hour$day_hour <- format(Methane_daily_hour$time, "%Y-%m-%d-%H") 
+Select_column_Methane_daily_hourly<- colnames(Methane_daily_hour)[3:length(Methane_daily_hour)-1]
+Methane_daily_hour[Select_column_Methane_daily_hourly] <- lapply(Methane_daily_hour[Select_column_Methane_daily_hourly], as.numeric) #makes middle numeric
+Methane_daily_hour$time <- Methane_daily_hour$day_hour #making it so that the first column is the new last column
+Methane_daily_hour <- Methane_daily_hour %>% select(-ncol(Methane_daily_hour)) %>% group_by(time) %>% summarise(across(everything(), mean, na.rm = TRUE))
 
 
 #-----CARBON MONOXIDE
@@ -198,7 +244,6 @@ Carbon_Monoxide <- Carbon_Monoxide[1:(length(Carbon_Monoxide)-1)] #dropping last
 Carbon_Monoxide$time <- as.POSIXct(as.numeric(Carbon_Monoxide$time), origin = "1970-01-01", tz = "UTC")
 Carbon_Monoxide_converted <- Carbon_Monoxide
 
-
 Carbon_Monoxide_converted$time <- as.Date(Carbon_Monoxide_converted$time)
 Select_column_non_time_Carbon_Monoxide <- colnames(Carbon_Monoxide_converted[-1]) #selecting all columns except time
 Carbon_Monoxide_converted[Select_column_non_time_Carbon_Monoxide] <- lapply(Carbon_Monoxide_converted[Select_column_non_time_Carbon_Monoxide], as.numeric)
@@ -210,6 +255,14 @@ Carbon_Monoxide_hourly$hour <- format(Carbon_Monoxide_hourly$time, "%H")
 Select_column_Carbon_Monoxide_hourly <- colnames(Carbon_Monoxide_hourly)[1:length(Carbon_Monoxide_hourly)]
 Carbon_Monoxide_hourly[Select_column_Carbon_Monoxide_hourly] <- lapply(Carbon_Monoxide_hourly[Select_column_Carbon_Monoxide_hourly], as.numeric)
 Carbon_Monoxide_hourly <- Carbon_Monoxide_hourly %>% select(-1) %>% group_by(hour) %>% summarise(across(everything(), mean, na.rm = TRUE))
+
+#daily average by hour for Carbon Monoxide
+Carbon_Monoxide_daily_hour <- Carbon_Monoxide
+Carbon_Monoxide_daily_hour$day_hour <- format(Carbon_Monoxide_daily_hour$time, "%Y-%m-%d-%H") 
+Select_column_Carbon_Monoxide_daily_hourly<- colnames(Carbon_Monoxide_daily_hour)[3:length(Carbon_Monoxide_daily_hour)-1]
+Carbon_Monoxide_daily_hour[Select_column_Carbon_Monoxide_daily_hourly] <- lapply(Carbon_Monoxide_daily_hour[Select_column_Carbon_Monoxide_daily_hourly], as.numeric) #makes middle numeric
+Carbon_Monoxide_daily_hour$time <- Carbon_Monoxide_daily_hour$day_hour #making it so that the first column is the new last column
+Carbon_Monoxide_daily_hour <- Carbon_Monoxide_daily_hour %>% select(-ncol(Carbon_Monoxide_daily_hour)) %>% group_by(time) %>% summarise(across(everything(), mean, na.rm = TRUE))
 
 
 #-----HYDROGEN SULFIDE
@@ -240,6 +293,15 @@ Select_column_Hydrogen_Sulfide_hourly <- colnames(Hydrogen_Sulfide_hourly)[1:len
 Hydrogen_Sulfide_hourly[Select_column_Hydrogen_Sulfide_hourly] <- lapply(Hydrogen_Sulfide_hourly[Select_column_Hydrogen_Sulfide_hourly], as.numeric)
 Hydrogen_Sulfide_hourly <- Hydrogen_Sulfide_hourly %>% select(-1) %>% group_by(hour) %>% summarise(across(everything(), mean, na.rm = TRUE))
 
+#daily average for hydrogen sulfide
+Hydrogen_Sulfide_daily_hour <- Hydrogen_Sulfide 
+Hydrogen_Sulfide_daily_hour$day_hour <- format(Hydrogen_Sulfide_daily_hour$time, "%Y-%m-%d-%H") 
+Select_column_Hydrogen_Sulfide_daily_hourly<- colnames(Hydrogen_Sulfide_daily_hour)[3:length(Hydrogen_Sulfide_daily_hour)-1]
+Hydrogen_Sulfide_daily_hour[Select_column_Hydrogen_Sulfide_daily_hourly] <- lapply(Hydrogen_Sulfide_daily_hour[Select_column_Hydrogen_Sulfide_daily_hourly], as.numeric) #makes middle numeric
+Hydrogen_Sulfide_daily_hour$time <- Hydrogen_Sulfide_daily_hour$day_hour #making it so that the first column is the new last column
+Hydrogen_Sulfide_daily_hour <- Hydrogen_Sulfide_daily_hour %>% select(-ncol(Hydrogen_Sulfide_daily_hour)) %>% group_by(time) %>% summarise(across(everything(), mean, na.rm = TRUE))
+
+
 ###### VOC
 Volatile_Organic_Compound <- read.csv("TrailerData/LNM_voc_2023_q2_v3.3.csv", header = FALSE)
 Volatile_Organic_Compound_q3 <- read.csv("TrailerData/LNM_voc_2023_q3_v3.3.csv", header = FALSE)
@@ -259,12 +321,22 @@ Volatile_Organic_Compound_converted$time <- as.Date(Volatile_Organic_Compound_co
 Select_column_non_time_Volatile_Organic_Compound <- colnames(Volatile_Organic_Compound_converted[-1]) #selecting all columns except time
 Volatile_Organic_Compound_converted[Select_column_non_time_Volatile_Organic_Compound] <- lapply(Volatile_Organic_Compound_converted[Select_column_non_time_Volatile_Organic_Compound], as.numeric)
 Volatile_Organic_Compound_daily_average <- Volatile_Organic_Compound_converted %>% group_by(time) %>% summarize(across(everything(), mean, na.rm = TRUE))
+
 #the hourly for Volatile_Organic_Compound
 Volatile_Organic_Compound_hourly <- Volatile_Organic_Compound
 Volatile_Organic_Compound_hourly$hour <- format(Volatile_Organic_Compound_hourly$time, "%H")
 Select_column_Volatile_Organic_Compound_hourly <- colnames(Volatile_Organic_Compound_hourly)[1:length(Volatile_Organic_Compound_hourly)]
 Volatile_Organic_Compound_hourly[Select_column_Volatile_Organic_Compound_hourly] <- lapply(Volatile_Organic_Compound_hourly[Select_column_Volatile_Organic_Compound_hourly], as.numeric)
 Volatile_Organic_Compound_hourly <- Volatile_Organic_Compound_hourly %>% select(-1) %>% group_by(hour) %>% summarise(across(everything(), mean, na.rm = TRUE))
+
+#the daily hourly average for VOC
+Volatile_Organic_Compound_daily_hour <- Volatile_Organic_Compound 
+Volatile_Organic_Compound_daily_hour$day_hour <- format(Volatile_Organic_Compound_daily_hour$time, "%Y-%m-%d-%H") 
+Select_column_Volatile_Organic_Compound_daily_hourly<- colnames(Volatile_Organic_Compound_daily_hour)[3:length(Volatile_Organic_Compound_daily_hour)-1]
+Volatile_Organic_Compound_daily_hour[Select_column_Volatile_Organic_Compound_daily_hourly] <- lapply(Volatile_Organic_Compound_daily_hour[Select_column_Volatile_Organic_Compound_daily_hourly], as.numeric) #makes middle numeric
+Volatile_Organic_Compound_daily_hour$time <- Volatile_Organic_Compound_daily_hour$day_hour #making it so that the first column is the new last column
+Volatile_Organic_Compound_daily_hour <- Volatile_Organic_Compound_daily_hour %>% select(-ncol(Volatile_Organic_Compound_daily_hour)) %>% group_by(time) %>% summarise(across(everything(), mean, na.rm = TRUE))
+
 
 
 #-----FOR DAILY AVERAGES
@@ -284,10 +356,20 @@ Merged_hourly_data <- merge(merge(merge(Nox_hourly, Ozone_hourly, by = "hour", a
 Merged_hourly_data <- merge(merge(merge(merge(Merged_hourly_data, Methane_hourly, by = "hour", all = TRUE), Carbon_Monoxide_hourly, by = "hour", all = TRUE), 
                             Hydrogen_Sulfide_hourly, by = "hour", all = TRUE), Volatile_Organic_Compound_hourly, by = "hour", all = TRUE)
 
+#-- FOR DAILY HOURLY AVERAGES
+Merged_daily_hourly_Data <- merge(merge(merge(Nox_daily_hour, Ozone_daily_hour, by = "time", all = TRUE), 
+                                        RadioActivity_daily_hour, by = "time", all = TRUE), Meteor_hourly_daily_average, by = "time", all = TRUE)
+
+#split into to so its easier to read
+Merged_daily_hourly_Data <- merge(merge(merge(merge(Merged_daily_hourly_Data, Methane_daily_hour, by = "time", all = TRUE), Carbon_Monoxide_daily_hour, by = "time", all = TRUE), 
+                                  Hydrogen_Sulfide_daily_hour, by = "time", all = TRUE), Volatile_Organic_Compound_daily_hour, by = "time", all = TRUE)
+
+
+
 #saving the data into the data/folder -- 
 saveRDS(Merged_Data, "TrailerData/Merged_Data.rds")
 saveRDS(Merged_hourly_data, "TrailerData/Merged_Data_hourly.rds")
-
+saveRDS(Merged_daily_hourly_Data, "TrailerData/Merged_Data_daily_hourly.rds")
 
 
 
